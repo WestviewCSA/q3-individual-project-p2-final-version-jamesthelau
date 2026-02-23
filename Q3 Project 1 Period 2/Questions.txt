@@ -1,3 +1,17 @@
 Questions:
 
 Write as many questions as you can based on the project specs.
+Im not really sure how you would find the most optimal path, how would you do that    O
+to find the shortest path must you find all possible solutions?                       C
+will all mazes have an open walkway?                                                  C
+will all mazes have a diamond wolverine buck?                                         C
+do we have to use hashmaps?                                                           C
+Are we using a char arry?                                                             C
+do we make our own maps or will you give them to us                                   O
+How much extra credit points and for what?                                            C
+Do we have to use 3d arrays															  C
+how detailed does the map have to be												  O
+Can a maze have multiple open walkways?												  C
+throughout the entire maze system is there only one wv buck?						  C
+What kind of input do we give? 														  C
+do we have to print the correct map?												  C
