@@ -15,15 +15,17 @@ public class p1 {
 	private static int row;
 	private static int mazeNum;
 	public static void main(String[] args) throws IllegalAccessException{
-		
+		int count=0;
+		for(String a:args) {
+			
+		}
 	}
 	public static void getMap(String file){
 		File mapfile=new File(file); //make the file obj
-		try {
-			Scanner scan=new Scanner(mapfile);
-			row=Integer.parseInt(scan.next()); // first int is row #
-			col=Integer.parseInt(scan.next()); // second is column #
-			mazeNum=Integer.parseInt(scan.next());
+		try (Scanner scan=new Scanner(file)){
+			int row=scan.nextInt(); // first int is row #
+			int col=scan.nextInt(); // second is column #
+			int mazeNum=scan.nextInt();
 			map=new String[row*mazeNum][col]; //2d array to add elements
 			for(int i=0;i<map.length;i++) { //making the map into the 2d array
 				String r=scan.next();
