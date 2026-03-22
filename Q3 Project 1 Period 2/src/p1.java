@@ -14,17 +14,28 @@ public class p1 {
 	private static int col,row, numMaze;
 	private static ArrayList<ArrayList<Integer>> res=new ArrayList<>();
 	private static boolean closed=false;
-	public static void main(String[] args) throws IllegalAccessException{
+	private static long start,end;
+	private static boolean st,q,opt,time,in,out,error;
+	public static void main(String[] args){
 		int count=0;
-		for(String a:args) {
-			switch(a) {
-			case "--Stack":
-				stc=true;
-				count++;
-				break;
-			case "--Queue":
+		for (int i=0;i<args.length;i++) {
+			String a=args[i];
+			if(a.equals("--Stack")) {
+				st=true; count++; }
+			else if(a.equals("--Queue")) {
+				q=true;count++;
 			}
+			else if (a.equals("--Opt")) {
+				opt = true;count++;}
+			else if(a.equals("--Time")) time=true;
+			else if(a.equals("--Incoordinate")) in=true;
+			else if(a.equals("--Outcoordinate")) out=true;
+			else if(a.equals("--Help")) error=true;
 		}
+		if(error){
+			System.out.println("Use --Stack, --Queue, or --Opt to solve the maze.");
+			return;
+		} 
 	}
 	public static void getMap(String file){
 		File mapfile=new File(file); //make the file obj
