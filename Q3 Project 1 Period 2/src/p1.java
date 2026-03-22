@@ -11,13 +11,19 @@ import java.util.HashMap;
 
 public class p1 {
 	private static String[][] map;
-	private static int col;
-	private static int row;
-	private static int mazeNum;
+	private static int col,row, numMaze;
+	private static ArrayList<ArrayList<Integer>> res=new ArrayList<>();
+	private static boolean closed=false;
 	public static void main(String[] args) throws IllegalAccessException{
 		int count=0;
 		for(String a:args) {
-			
+			switch(a) {
+			case "--Stack":
+				stc=true;
+				count++;
+				break;
+			case "--Queue":
+			}
 		}
 	}
 	public static void getMap(String file){
