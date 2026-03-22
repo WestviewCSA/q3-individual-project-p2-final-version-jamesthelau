@@ -10,36 +10,46 @@ import java.util.Queue;
 import java.util.HashMap;
 
 public class p1 {
-	private static String[][] map;
-	private static int col,row, numMaze;
-	private static ArrayList<ArrayList<Integer>> res=new ArrayList<>();
+	private static String[][] map; //main map
+	private static int col,row, numMaze; //variables for which maze, # of rows and columns
+	private static ArrayList<ArrayList<Integer>> res=new ArrayList<>(); //
 	private static boolean closed=false;
-	private static long start,end;
-	private static boolean st,q,opt,time,in,out,error;
-	public static void main(String[] args){
+	private static long start,end; //long is a int for larger capacity, these are used to track time
+	private static boolean st,q,opt,time,in,out,help;//use as switches, but start off false
+	public static void main(String[] args) {
 		int count=0;
-		for (int i=0;i<args.length;i++) {
-			String a=args[i];
-			if(a.equals("--Stack")) {
+		for (int i=0;i<args.length;i++) {//go through all all values in args
+			String a=args[i]; //these are the command line arguements, finding the flags to switch the boolean to true and adding to the count
+			if(a.equals("--stack")) {
 				st=true; count++; }
-			else if(a.equals("--Queue")) {
+			else if(a.equals("--queue")) {
 				q=true;count++;
 			}
-			else if (a.equals("--Opt")) {
+			else if (a.equals("--opt")) {//if the value ever equals 
 				opt = true;count++;}
-			else if(a.equals("--Time")) time=true;
-			else if(a.equals("--Incoordinate")) in=true;
-			else if(a.equals("--Outcoordinate")) out=true;
-			else if(a.equals("--Help")) error=true;
+			else if(a.equals("--time")) time=true;
+			else if(a.equals("--in")) in=true;
+			else if(a.equals("--out")) out=true;
+			else if(a.equals("--Help")) help=true;
 		}
-		if(error){
-			System.out.println("Use --Stack, --Queue, or --Opt to solve the maze.");
+		if(help) {//explain the functions
+			System.out.println("use the --stack, --queue, and --opt to find a path to the Wolverine Buck");
+			System.out.println("--opt to find the shortest path");
+			System.out.println("--time to get total runtime");
+			System.out.println("--in for coordinate input format");
+			System.out.println("--out for coord output format");
 			return;
-		} 
+		}
+		if(count!=1) {
+			System.out.println("Use exactly one input");
+			System.exit(-1);
+		}
+		String f=args[args.length-1];
+		
 	}
-	public static void getMap(String file){
+	public static void getMap(String file) {
 		File mapfile=new File(file); //make the file obj
-		try (Scanner scan=new Scanner(file)){
+		try (Scanner scan=new Scanner(file)) {
 			int row=scan.nextInt(); // first int is row #
 			int col=scan.nextInt(); // second is column #
 			int mazeNum=scan.nextInt();
@@ -62,7 +72,7 @@ public class p1 {
 	    ArrayList<ArrayList<Integer>> starts=new ArrayList<>(); //beginning
 	    HashMap<ArrayList<Integer>,ArrayList<Integer>> path=new HashMap<>(); //keep track of order
 	    ArrayList<Integer> buck = new ArrayList<>();//buck cord
-	    for (int i=0;i<map.length;i++){ //find buck
+	    for (int i=0;i<map.length;i++) { //find buck
 	        for (int j=0;j<map[0].length;j++){
 	            if (map[i][j].equals("W")){
 	                ArrayList<Integer> p = new ArrayList<>(Arrays.asList(i-z*row,j,z));
@@ -73,7 +83,7 @@ public class p1 {
 	    }
 	    int[] d={-1,0,1,0,0,1,0,-1};//north south east west 
 	    if(!starts.isEmpty()) st.push(starts.get(0));//add starting to stack
-	    while(!st.isEmpty()&&buck.isEmpty()){
+	    while(!st.isEmpty()&&buck.isEmpty()) {
 	        ArrayList<Integer> cur=st.pop();//pop
 	        int cx=cur.get(0),cy=cur.get(1),cz=cur.get(2);
 	        for(int i=0;i<d.length;i+=2){
