@@ -106,5 +106,50 @@ public class p1 {
 	        }
 	    }
 	}
+	public static void queueBased() {
+		int z=0;//map #
+		Queue<ArrayList<Integer>> q=new LinkedList<>();
+		ArrayList<ArrayList<Integer>> starts=new ArrayList<>();//beginning
+		HashMap<ArrayList<Integer>,ArrayList<Integer>> path=new HashMap<>();//order tracking
+		ArrayList<Integer> buck=new ArrayList<>();//buck cord
+		for(int i=0;i<map.length;i++) { //find starts
+			for(int j=0;j<map[0].length;j++) {
+				if(map[i][j].equals("W")) {
+					ArrayList<Integer> p=new ArrayList<>(Arrays.asList(i-z*row,j,z));
+					starts.add(p);
+					z++;
+				}
+			}
+		}
+		int[] d={-1,0,1,0,0,1,0,-1};//north south east west
+		if(!starts.isEmpty()) q.add(starts.get(0));//add start to queue
+		while(!q.isEmpty()&&buck.isEmpty()) {
+			ArrayList<Integer> cur=q.remove();//dequeue
+			int cx=cur.get(0),cy=cur.get(1),cz=cur.get(2);
+			for(int i=0;i<d.length;i+=2) {
+				int nx=cx+d[i],ny=cy+d[i+1];
+				if(nx>=0&&nx<row&&ny>=0&&ny<col) { //check bound
+					ArrayList<Integer> next=new ArrayList<>(Arrays.asList(nx,ny,cz));
+					String tile=map[nx+cz*row][ny];
+					if(!path.containsKey(next)) { //only visit new
+						if(tile.equals("$")) {
+							buck.addAll(next);
+							path.put(next,cur); //save for trace
+							break;
+						}else if(tile.equals(".")||tile.equals("|")) {
+							path.put(next,cur); //mark visited
+							q.add(next);
+							if(tile.equals("|")) { //portal to next maze
+								ArrayList<Integer> nexM=starts.get(cz+1);
+								q.add(nexM);
+								path.put(nexM,next);
+							}
+						}
+					}
+				}
+			}
+		}
+		traceback(starts,buck,path);//trace back path
+	}
 }
 	
