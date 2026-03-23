@@ -161,19 +161,20 @@ public class p1 {
 		}
 	}
 	public static void traceback(ArrayList<ArrayList<Integer>> starts,ArrayList<Integer> buck,HashMap<ArrayList<Integer>,ArrayList<Integer>> path) {
-		if(buck.isEmpty()) { //check if buck exists
-			closed=true;
-			System.out.println("The Wolverine Store is closed.");
-			return;
-		}
-		ArrayList<Integer> c=buck; //start at buck
-		while(c!=null) { //trace to start
-			res.add(0,c); //add to front for order
-			c=path.get(c); //get parent cord
-		}
-		if(!res.isEmpty()) { //remove duplicate start
-			res.remove(0);
-		}
+	    if(buck.isEmpty()){ //check if buck exists
+	        closed=true;
+	        System.out.println("The Wolverine Store is closed.");
+	        return;
+	    }
+	    //ensure c is exactly 3 coordinates [x,y,z]
+	    ArrayList<Integer> c=new ArrayList<>(Arrays.asList(buck.get(0),buck.get(1),buck.get(2)));
+	    while(c!=null){ //trace to start
+	        res.add(0,c); //add to front for order
+	        c=path.get(c); //get parent cord
+	    }
+	    if(!res.isEmpty()){ //remove start W to match path requirements
+	        res.remove(0);
+	    }
 	}
 	public static void stack() {
 		int z=0;//map #
@@ -205,20 +206,21 @@ public class p1 {
 					String tile=map[nx+cz*row][ny];
 					if(!path.containsKey(next)) { //only visits new
 						if(tile.equals("$")) {
-							buck.addAll(next); 
-							path.put(next,cur); //save for trace
-							break;
+						    buck.clear(); // Ensure it's empty before adding
+						    buck.addAll(next); 
+						    path.put(next, cur); 
+						    break;
 						}
-						else if(tile.equals(".")||tile.equals("|")) {
-							path.put(next,cur); //mark parent
-							st.push(next);
-							if(tile.equals("|")&&cz+1<numMaze) { //portal logic
-								ArrayList<Integer> nexM=starts.get(cz+1);
-								if(!path.containsKey(nexM)) {
-									st.push(nexM);
-									path.put(nexM,next);
-								}
-							}
+						else if(tile.equals(".")||tile.equals("|")){
+						    path.put(next,cur); //mark parent
+						    st.push(next);
+						    if(tile.equals("|")&&cz+1<numMaze){ //portal logic
+						        ArrayList<Integer> nexM=starts.get(cz+1);
+						        if(!path.containsKey(nexM)){
+						            path.put(nexM,next); //link start of next level to portal
+						            st.push(nexM);
+						        }
+						    }
 						}
 					}
 				}
@@ -256,20 +258,21 @@ public class p1 {
 					String tile=map[nx+cz*row][ny];
 					if(!path.containsKey(next)) { //only visit new
 						if(tile.equals("$")) {
-							buck.addAll(next);
-							path.put(next,cur); //save for trace
-							break;
+						    buck.clear(); // Ensure it's empty before adding
+						    buck.addAll(next); 
+						    path.put(next, cur); 
+						    break;
 						}
-						else if(tile.equals(".")||tile.equals("|")) {
-							path.put(next,cur); //mark visited
-							q.add(next);
-							if(tile.equals("|")&&cz+1<numMaze) { //portal logic
-								ArrayList<Integer> nexM=starts.get(cz+1);
-								if(!path.containsKey(nexM)) {
-									q.add(nexM);
-									path.put(nexM,next);
-								}
-							}
+						else if(tile.equals(".")||tile.equals("|")){
+						    path.put(next,cur); //mark parent
+						    q.add(next);
+						    if(tile.equals("|")&&cz+1<numMaze){ //portal logic
+						        ArrayList<Integer> nexM=starts.get(cz+1);
+						        if(!path.containsKey(nexM)){
+						            path.put(nexM,next); //link start of next level to portal
+						            q.add(nexM);
+						        }
+						    }
 						}
 					}
 				}
