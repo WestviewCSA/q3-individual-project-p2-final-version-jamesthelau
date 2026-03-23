@@ -20,50 +20,144 @@ public class p1 {
 		int count=0;
 		for (int i=0;i<args.length;i++) {//go through all all values in args
 			String a=args[i]; //these are the command line arguements, finding the flags to switch the boolean to true and adding to the count
-			if(a.equals("--stack")) {
-				st=true; count++; }
-			else if(a.equals("--queue")) {
+			if(a.equals("--Stack")) {
+				st=true;count++;
+			}
+			else if(a.equals("--Queue")) {
 				q=true;count++;
 			}
-			else if (a.equals("--opt")) {//if the value ever equals 
-				opt = true;count++;}
-			else if(a.equals("--time")) time=true;
-			else if(a.equals("--in")) in=true;
-			else if(a.equals("--out")) out=true;
-			else if(a.equals("--Help")) help=true;
+			else if (a.equals("--Opt")) {
+				opt=true;count++;
+			}
+			else if(a.equals("--Time")) {
+				time=true;
+			}
+			else if(a.equals("--Incoordinate")) {
+				in=true;
+			}
+			else if(a.equals("--Outcoordinate")) {
+				out=true;
+			}
+			else if(a.equals("--Help")) {
+				help=true;
+			}
 		}
 		if(help) {//explain the functions
-			System.out.println("use the --stack, --queue, and --opt to find a path to the Wolverine Buck");
-			System.out.println("--opt to find the shortest path");
-			System.out.println("--time to get total runtime");
-			System.out.println("--in for coordinate input format");
-			System.out.println("--out for coord output format");
+			System.out.println("use the --Stack, --Queue, and --Opt to find a path to the Wolverine Buck");
+			System.out.println("--Opt to find the shortest path");
+			System.out.println("--Time to get total runtime");
+			System.out.println("--Incoordinate for coordinate input format");
+			System.out.println("--Outcoordinate for coord output format");
 			return;
 		}
 		if(count!=1) {
 			System.out.println("Use exactly one input");
 			System.exit(-1);
 		}
-		String f=args[args.length-1];
 		
+		String f=args[args.length-1];
+		if(in) {
+			getMap(f);
+		}
+		else {
+			getMapGrid(f);
+		}
+		
+		start=System.nanoTime(); //googled these parts but its just a few lines
+		if(st) {
+			stack();
+		}
+		else if(q||opt) {
+			queueBased();
+		}
+		end=System.nanoTime();
+		
+		if(out) {
+			printCoor();
+		}
+		else {
+			printMap();
+		}
+		
+		if(time) {
+			System.out.println("Runtime: "+((end-start)/1000000000.0)+"s");
+		}
 	}
 	public static void getMap(String file) {
-		File mapfile=new File(file); //make the file obj
-		try (Scanner scan=new Scanner(file)) {
-			int row=scan.nextInt(); // first int is row #
-			int col=scan.nextInt(); // second is column #
-			int mazeNum=scan.nextInt();
-			map=new String[row*mazeNum][col]; //2d array to add elements
-			for(int i=0;i<map.length;i++) { //making the map into the 2d array
-				String r=scan.next();
-				for(int j=0;j<map[0].length;j++) {
-					String el=r.substring(j,j+1);
-					map[i][j]=el;
+		try {
+			File fl=new File(file);
+			Scanner sc=new Scanner(fl); //fixed scanner to read file
+			row=sc.nextInt(); //first 3 are dims
+			col=sc.nextInt();
+			numMaze=sc.nextInt();
+			if(row<=0||col<=0||numMaze<=0) {
+				return;
+			}
+			map=new String[row*numMaze][col]; //setup map
+			while(sc.hasNext()) { //read symbol then 3 ints
+				String s=sc.next();
+				int r=sc.nextInt(),c=sc.nextInt(),m=sc.nextInt();
+				if(r>=0&&r<row&&c>=0&&c<col&&m>=0&&m<numMaze) { //if it fits
+					map[r+m*row][c]=s;
 				}
 			}
-			scan.close();
-		} catch (FileNotFoundException e) {
-			System.out.println("File not found: "+e.getMessage());
+			for(int i=0;i<map.length;i++) { //fill empty spots with dots
+				for(int j=0;j<col;j++) {
+					if(map[i][j]==null) {
+						map[i][j]=".";
+					}
+				}
+			}
+			sc.close();
+		} catch(Exception e) {
+			System.out.println("Error: "+e.getMessage());
+		}
+	}
+	public static void getMapGrid(String file) { //logic for grid format
+		try {
+			File fl=new File(file);
+			Scanner sc=new Scanner(fl); //fixed scanner
+			row=sc.nextInt();
+			col=sc.nextInt();
+			numMaze=sc.nextInt();
+			map=new String[row*numMaze][col];
+			for(int i=0;i<map.length;i++) { //read rows
+				String line=sc.next();
+				for(int j=0;j<col;j++) {
+					map[i][j]=line.substring(j,j+1); //put char in map
+				}
+			}
+			sc.close();
+		} catch(Exception e) {
+			System.out.println("Error: "+e.getMessage());
+		}
+	}
+	public static void printMap() {
+		if(!closed) { //check if solved
+			for(ArrayList<Integer> p:res) { //mark path dots
+				int r=p.get(0),c=p.get(1),z=p.get(2);
+				if(map[r+z*row][c].equals(".")) {
+					map[r+z*row][c]="+";
+				}
+			}
+			for(String[] r:map) { //print every row
+				for(String s:r) {
+					System.out.print(s);
+				}
+				System.out.println();
+			}
+		}
+	}
+
+	public static void printCoor() {
+		if(!closed) { //check if solved
+			for(int i=0;i<res.size();i++) { //go through path
+				ArrayList<Integer> p=res.get(i);
+				int r=p.get(0),c=p.get(1),z=p.get(2);
+				if(map[r+z*row][c].equals(".")) { //only print dot path
+					System.out.println("+ "+r+" "+c+" "+z);
+				}
+			}
 		}
 	}
 	public static void traceback(ArrayList<ArrayList<Integer>> starts,ArrayList<Integer> buck,HashMap<ArrayList<Integer>,ArrayList<Integer>> path) {
@@ -77,46 +171,60 @@ public class p1 {
 			res.add(0,c); //add to front for order
 			c=path.get(c); //get parent cord
 		}
+		if(!res.isEmpty()) { //remove duplicate start
+			res.remove(0);
+		}
 	}
 	public static void stack() {
-	    int z=0;//map #
-	    Deque<ArrayList<Integer>> st=new ArrayDeque<>();
-	    ArrayList<ArrayList<Integer>> starts=new ArrayList<>(); //beginning
-	    HashMap<ArrayList<Integer>,ArrayList<Integer>> path=new HashMap<>(); //keep track of order
-	    ArrayList<Integer> buck = new ArrayList<>();//buck cord
-	    for (int i=0;i<map.length;i++) { //find buck
-	        for (int j=0;j<map[0].length;j++){
-	            if (map[i][j].equals("W")){
-	                ArrayList<Integer> p = new ArrayList<>(Arrays.asList(i-z*row,j,z));
-	                starts.add(p);
-	                z++;//change map number
-	            }
-	        }
-	    }
-	    int[] d={-1,0,1,0,0,1,0,-1};//north south east west 
-	    if(!starts.isEmpty()) st.push(starts.get(0));//add starting to stack
-	    while(!st.isEmpty()&&buck.isEmpty()) {
-	        ArrayList<Integer> cur=st.pop();//pop
-	        int cx=cur.get(0),cy=cur.get(1),cz=cur.get(2);
-	        for(int i=0;i<d.length;i+=2){
-	            int nx=cx+d[i],ny=cy+d[i+1];
-	            if(nx>=0&&nx<row&&ny>=0&&ny<col) { //check bound
-	                ArrayList<Integer> next=new ArrayList<>(Arrays.asList(nx,ny,cz));
-	                String tile=map[nx+cz*row][ny];
-	                //check if neighbor is walkable or buck
-	                if(!path.containsKey(next)) { //only visits new
-	                    if(tile.equals("$")) {
-	                        buck.addAll(next); 
-	                        path.put(next,cur); //save for tracing later
-	                        break;
-	                    }else if(tile.equals(".")) {
-	                        path.put(next,cur); //marks and record parent
-	                        st.push(next); //add to stack to check later
-	                    }
-	                }
-	            }
-	        }
-	    }
+		int z=0;//map #
+		Deque<ArrayList<Integer>> st=new ArrayDeque<>();
+		ArrayList<ArrayList<Integer>> starts=new ArrayList<>(); //beginning
+		HashMap<ArrayList<Integer>,ArrayList<Integer>> path=new HashMap<>(); //track order
+		ArrayList<Integer> buck=new ArrayList<>();//buck cord
+		for(int i=0;i<numMaze;i++) { //find starts for each level
+			for(int r=0;r<row;r++) {
+				for(int j=0;j<col;j++) {
+					if(map[r+i*row][j].equals("W")) {
+						starts.add(new ArrayList<>(Arrays.asList(r,j,i)));
+					}
+				}
+			}
+		}
+		int[] d={-1,0,1,0,0,1,0,-1};//north south east west 
+		if(!starts.isEmpty()) {
+			st.push(starts.get(0));//add start to stack
+			path.put(starts.get(0),null);//start has no parent
+		}
+		while(!st.isEmpty()&&buck.isEmpty()) {
+			ArrayList<Integer> cur=st.pop();//pop
+			int cx=cur.get(0),cy=cur.get(1),cz=cur.get(2);
+			for(int i=0;i<d.length;i+=2) {
+				int nx=cx+d[i],ny=cy+d[i+1];
+				if(nx>=0&&nx<row&&ny>=0&&ny<col) { //check bound
+					ArrayList<Integer> next=new ArrayList<>(Arrays.asList(nx,ny,cz));
+					String tile=map[nx+cz*row][ny];
+					if(!path.containsKey(next)) { //only visits new
+						if(tile.equals("$")) {
+							buck.addAll(next); 
+							path.put(next,cur); //save for trace
+							break;
+						}
+						else if(tile.equals(".")||tile.equals("|")) {
+							path.put(next,cur); //mark parent
+							st.push(next);
+							if(tile.equals("|")&&cz+1<numMaze) { //portal logic
+								ArrayList<Integer> nexM=starts.get(cz+1);
+								if(!path.containsKey(nexM)) {
+									st.push(nexM);
+									path.put(nexM,next);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		traceback(starts,buck,path);//final path trace
 	}
 	public static void queueBased() {
 		int z=0;//map #
@@ -124,17 +232,20 @@ public class p1 {
 		ArrayList<ArrayList<Integer>> starts=new ArrayList<>();//beginning
 		HashMap<ArrayList<Integer>,ArrayList<Integer>> path=new HashMap<>();//order tracking
 		ArrayList<Integer> buck=new ArrayList<>();//buck cord
-		for(int i=0;i<map.length;i++) { //find starts
-			for(int j=0;j<map[0].length;j++) {
-				if(map[i][j].equals("W")) {
-					ArrayList<Integer> p=new ArrayList<>(Arrays.asList(i-z*row,j,z));
-					starts.add(p);
-					z++;
+		for(int i=0;i<numMaze;i++) { //find starts for each level
+			for(int r=0;r<row;r++) {
+				for(int j=0;j<col;j++) {
+					if(map[r+i*row][j].equals("W")) {
+						starts.add(new ArrayList<>(Arrays.asList(r,j,i)));
+					}
 				}
 			}
 		}
 		int[] d={-1,0,1,0,0,1,0,-1};//north south east west
-		if(!starts.isEmpty()) q.add(starts.get(0));//add start to queue
+		if(!starts.isEmpty()) {
+			q.add(starts.get(0));//add start to queue
+			path.put(starts.get(0),null);//no parent for start
+		}
 		while(!q.isEmpty()&&buck.isEmpty()) {
 			ArrayList<Integer> cur=q.remove();//dequeue
 			int cx=cur.get(0),cy=cur.get(1),cz=cur.get(2);
@@ -148,13 +259,16 @@ public class p1 {
 							buck.addAll(next);
 							path.put(next,cur); //save for trace
 							break;
-						}else if(tile.equals(".")||tile.equals("|")) {
+						}
+						else if(tile.equals(".")||tile.equals("|")) {
 							path.put(next,cur); //mark visited
 							q.add(next);
-							if(tile.equals("|")) { //portal to next maze
+							if(tile.equals("|")&&cz+1<numMaze) { //portal logic
 								ArrayList<Integer> nexM=starts.get(cz+1);
-								q.add(nexM);
-								path.put(nexM,next);
+								if(!path.containsKey(nexM)) {
+									q.add(nexM);
+									path.put(nexM,next);
+								}
 							}
 						}
 					}
@@ -164,4 +278,3 @@ public class p1 {
 		traceback(starts,buck,path);//trace back path
 	}
 }
-	
