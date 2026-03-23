@@ -66,6 +66,18 @@ public class p1 {
 			System.out.println("File not found: "+e.getMessage());
 		}
 	}
+	public static void traceback(ArrayList<ArrayList<Integer>> starts,ArrayList<Integer> buck,HashMap<ArrayList<Integer>,ArrayList<Integer>> path) {
+		if(buck.isEmpty()) { //check if buck exists
+			closed=true;
+			System.out.println("The Wolverine Store is closed.");
+			return;
+		}
+		ArrayList<Integer> c=buck; //start at buck
+		while(c!=null) { //trace to start
+			res.add(0,c); //add to front for order
+			c=path.get(c); //get parent cord
+		}
+	}
 	public static void stack() {
 	    int z=0;//map #
 	    Deque<ArrayList<Integer>> st=new ArrayDeque<>();
