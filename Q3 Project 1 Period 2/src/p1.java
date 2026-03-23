@@ -17,6 +17,22 @@ public class p1 {
 	private static long start,end; //long is a int for larger capacity, these are used to track time
 	private static boolean st,q,opt,time,in,out,help;//use as switches, but start off false
 	public static void main(String[] args) {
+		if(out){ 
+		    printCoor();
+		    row=0;col=0;numMaze=0; //reset dimentions
+		    map=new String[0][0]; //clear old map data
+		    res=new ArrayList<>(); //clear path results
+		    closed=false; //reset solver state
+		    start=0;end=0; //reset timer
+		}
+		else{
+		    printMap();
+		    row=0;col=0;numMaze=0;
+		    map=new String[0][0];
+		    res=new ArrayList<>();
+		    closed=false;
+		    start=0;end=0;
+		}
 		int count=0;
 		for (int i=0;i<args.length;i++) {//go through all all values in args
 			String a=args[i]; //these are the command line arguements, finding the flags to switch the boolean to true and adding to the count
@@ -160,20 +176,17 @@ public class p1 {
 			}
 		}
 	}
-	public static void traceback(ArrayList<ArrayList<Integer>> starts,ArrayList<Integer> buck,HashMap<ArrayList<Integer>,ArrayList<Integer>> path) {
+	public static void traceback(ArrayList<ArrayList<Integer>> starts,ArrayList<Integer> buck,HashMap<ArrayList<Integer>,ArrayList<Integer>> path){
 	    if(buck.isEmpty()){ //check if buck exists
 	        closed=true;
 	        System.out.println("The Wolverine Store is closed.");
 	        return;
 	    }
-	    //ensure c is exactly 3 coordinates [x,y,z]
 	    ArrayList<Integer> c=new ArrayList<>(Arrays.asList(buck.get(0),buck.get(1),buck.get(2)));
-	    while(c!=null){ //trace to start
-	        res.add(0,c); //add to front for order
-	        c=path.get(c); //get parent cord
-	    }
-	    if(!res.isEmpty()){ //remove start W to match path requirements
-	        res.remove(0);
+	    ArrayList<Integer> startNode=starts.get(0); //root start
+	    while(c!=null&&!c.equals(startNode)){ //trace until reaching start
+	        res.add(0,c); //add to front
+	        c=path.get(c); //get parent
 	    }
 	}
 	public static void stack() {
