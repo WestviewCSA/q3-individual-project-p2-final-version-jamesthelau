@@ -17,22 +17,6 @@ public class p1 {
 	private static long start,end; //long is a int for larger capacity, these are used to track time
 	private static boolean st,q,opt,time,in,out,help;//use as switches, but start off false
 	public static void main(String[] args) {
-		if(out){ 
-		    printCoor();
-		    row=0;col=0;numMaze=0; //reset dimentions
-		    map=new String[0][0]; //clear old map data
-		    res=new ArrayList<>(); //clear path results
-		    closed=false; //reset solver state
-		    start=0;end=0; //reset timer
-		}
-		else{
-		    printMap();
-		    row=0;col=0;numMaze=0;
-		    map=new String[0][0];
-		    res=new ArrayList<>();
-		    closed=false;
-		    start=0;end=0;
-		}
 		int count=0;
 		for (int i=0;i<args.length;i++) {//go through all all values in args
 			String a=args[i]; //these are the command line arguements, finding the flags to switch the boolean to true and adding to the count
@@ -98,6 +82,14 @@ public class p1 {
 		if(time) {
 			System.out.println("Runtime: "+((end-start)/1000000000.0)+"s");
 		}
+		
+		//reset instance variables for next test
+		row=0;col=0;numMaze=0; //reset dimentions
+		map=new String[0][0]; //clear old map data
+		res=new ArrayList<>(); //clear path results
+		closed=false; //reset solver state
+		start=0;end=0; //reset timer
+		st=false;q=false;opt=false;time=false;in=false;out=false;help=false; //reset switches
 	}
 	public static void getMap(String file) {
 		try {
